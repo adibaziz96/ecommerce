@@ -29,7 +29,7 @@ class CartController extends Controller
         $cart = DB::table('cart')
                     ->select('cart.*',DB::raw('count(*) as total'))
                     ->where('user_id',Auth::user()->id)
-                    ->groupBy(['color','size'])
+                    ->groupBy(['id','color','size'])
                     ->get();
         return view('cart',compact('cart'));
     }
