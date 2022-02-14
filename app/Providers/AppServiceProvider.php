@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         view()->composer('*', function($view){
             if(Auth::check()){
-                $cart = count(Cart::where('user_id',Auth::user()->id)->groupBy(['color','size'])->get());
+                $cart = count(Cart::where('user_id',Auth::user()->id)->groupBy(['id','color','size'])->get());
                 View::share('cart',$cart);
             }
         });
