@@ -27,19 +27,19 @@ This project use
 
 ### Credential
 
-Member
-email: member@member.com
-password: password
-Description: this user role can add to cart, remove from cart, place order and view order history (have discount on product)
+#Member
+- email: member@member.com
+- password: password
+- Description: this user role can add to cart, remove from cart, place order and view order history (have discount on product)
 
-Guest
-email: guest@guest.com
-password: password
-Description: this user role can add to cart, remove from cart, place order and view order history
+#Guest
+- email: guest@guest.com
+- password: password
+- Description: this user role can add to cart, remove from cart, place order and view order history
 
-Admin
-email: admin@admin.com
-password: password
-Description: this user role can add to cart, remove from cart, place order, view order history and view activity log
+#Admin
+- email: admin@admin.com
+- password: password
+- Description: this user role can add to cart, remove from cart, place order, view order history and view activity log
 
 For demo can access into this url as below:
