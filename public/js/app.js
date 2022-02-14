@@ -27703,7 +27703,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       selectedColor: Object,
       selectedSize: Object,
       flag: Boolean(false),
-      category: Array
+      countCart: String
     };
   },
   props: {
@@ -27807,6 +27807,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       axios.post(this.submitRoute, this.product).then(function (response) {
         if (response) {
           _this2.add = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(true);
+          location.reload();
         }
       })["catch"](function (error) {
         return console.log(error);

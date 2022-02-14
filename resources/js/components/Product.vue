@@ -327,7 +327,7 @@
                 selectedColor: Object,
                 selectedSize: Object,
                 flag: Boolean(false),
-                category: Array
+                countCart: String
             }
         },
         props: {
@@ -394,7 +394,8 @@
                 this.open = ref(false);
                 axios.post(this.submitRoute,this.product).then(response => {
                     if(response){
-                        this.add = ref(true);
+                        this.add = ref(true)
+                        location.reload()
                     }
                 }).catch(error => console.log(error));
             },

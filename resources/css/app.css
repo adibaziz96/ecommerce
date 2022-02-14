@@ -10,3 +10,7 @@
     border-radius: 150px;
     padding: 4px 10px 4px;
 }
+.bg-peach{
+    --tw-bg-opacity: 1;
+    background-color: rgb(247 228 211 / var(--tw-bg-opacity));
+}

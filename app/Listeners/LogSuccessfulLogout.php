@@ -6,6 +6,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use OwenIt\Auditing\Models\Audit;
 use Carbon\Carbon;
+use Auth;
 
 class LogSuccessfulLogout implements ShouldQueue
 {
@@ -28,7 +29,7 @@ class LogSuccessfulLogout implements ShouldQueue
     public function handle($event)
     {
         $data = [
-            'auditable_id'   => auth()->user()->id,
+            'auditable_id'   => Auth::user()->id,
             'auditable_type' => "App\Models\User",
             'event'          => "logout",
             'url'            => request()->fullUrl(),
@@ -36,7 +37,7 @@ class LogSuccessfulLogout implements ShouldQueue
             'user_agent'     => request()->userAgent(),
             'created_at'     => Carbon::now(),
             'updated_at'     => Carbon::now(),
-            'user_id'        => auth()->user()->id,
+            'user_id'        => Auth::user()->id    ,
         ];
         Audit::create($data);
     }
