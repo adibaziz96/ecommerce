@@ -6,6 +6,7 @@
             <product
                 submit-route="{{ route('add.cart') }}"
                 sort-route="{{ route('sort.product') }}"
+                cart-route="{{ route('list.cart') }}"
                 :product-data="{{ $product }}"
             ></product>
         </div>

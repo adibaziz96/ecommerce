@@ -141,17 +141,22 @@
                 products: Array,
                 open: Boolean(false),
                 close: Boolean(false),
-                subTotal: Number
+                subTotal: Number,
+                countCart: Number
             }
         },
         props: {
-            submitRoute: String(),
-            removeRoute: String(),
-            returnRoute: String(),
-            cartData: Array,
+            submitRoute: String,
+            removeRoute: String,
+            returnRoute: String,
+            cartRoute: String,
+            cartData: Array
         },
         mounted() {
             this.products = this.cartData
+
+            axios.get(this.cartRoute).then(response => (this.countCart = response.data))
+            document.getElementById('count').value = this.countCart;
         },
         methods: {
             calculatePrice (price,total){
@@ -169,14 +174,18 @@
                 this.close = ref(true);
                 axios.post(this.removeRoute,[color,size]).then(response => {
                     this.products = response.data
+                    axios.get(this.cartRoute).then((response) => {
+                        this.countCart = response.data
+                        document.getElementById('count').innerHTML = this.countCart;
+                    })
                 }).catch(error => console.log(error));
             },
             submitForm() {
                 this.open = ref(true);
                 axios.post(this.submitRoute,this.products).then((response) => {
-                    new Promise(resolve => {
-                        setTimeout(resolve, 3000)
-                        location.href = response.data
+                    axios.get(this.cartRoute).then((response) => {
+                        this.countCart = response.data
+                        document.getElementById('count').innerHTML = this.countCart;
                     })
                 }).catch(error => console.log(error));
             },

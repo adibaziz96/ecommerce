@@ -7,6 +7,7 @@
                 submit-route="{{ route('add.order') }}"
                 remove-route="{{ route('remove.cart') }}"
                 return-route="{{ route('product') }}"
+                cart-route="{{ route('list.cart') }}"
                 :cart-data="{{ $cart }}"
             ></cart>
         </div>

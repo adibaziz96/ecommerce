@@ -27473,17 +27473,25 @@ __webpack_require__.r(__webpack_exports__);
       products: Array,
       open: Boolean(false),
       close: Boolean(false),
-      subTotal: Number
+      subTotal: Number,
+      countCart: Number
     };
   },
   props: {
-    submitRoute: String(),
-    removeRoute: String(),
-    returnRoute: String(),
+    submitRoute: String,
+    removeRoute: String,
+    returnRoute: String,
+    cartRoute: String,
     cartData: Array
   },
   mounted: function mounted() {
+    var _this = this;
+
     this.products = this.cartData;
+    axios.get(this.cartRoute).then(function (response) {
+      return _this.countCart = response.data;
+    });
+    document.getElementById('count').value = this.countCart;
   },
   methods: {
     calculatePrice: function calculatePrice(price, total) {
@@ -27491,30 +27499,36 @@ __webpack_require__.r(__webpack_exports__);
       return 'RM ' + totalPrice.toFixed(2);
     },
     calculateTotal: function calculateTotal() {
-      var _this = this;
+      var _this2 = this;
 
       this.subTotal = 0;
       this.cartData.forEach(function (item) {
-        _this.subTotal = _this.subTotal + parseInt(item.price.replace('RM', '')) * parseInt(item.total);
+        _this2.subTotal = _this2.subTotal + parseInt(item.price.replace('RM', '')) * parseInt(item.total);
       });
       return 'RM ' + this.subTotal.toFixed(2);
     },
     removeProduct: function removeProduct(color, size) {
-      var _this2 = this;
+      var _this3 = this;
 
       this.close = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(true);
       axios.post(this.removeRoute, [color, size]).then(function (response) {
-        _this2.products = response.data;
+        _this3.products = response.data;
+        axios.get(_this3.cartRoute).then(function (response) {
+          _this3.countCart = response.data;
+          document.getElementById('count').innerHTML = _this3.countCart;
+        });
       })["catch"](function (error) {
         return console.log(error);
       });
     },
     submitForm: function submitForm() {
+      var _this4 = this;
+
       this.open = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(true);
       axios.post(this.submitRoute, this.products).then(function (response) {
-        new Promise(function (resolve) {
-          setTimeout(resolve, 3000);
-          location.href = response.data;
+        axios.get(_this4.cartRoute).then(function (response) {
+          _this4.countCart = response.data;
+          document.getElementById('count').innerHTML = _this4.countCart;
         });
       })["catch"](function (error) {
         return console.log(error);
@@ -27709,7 +27723,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   props: {
     submitRoute: String,
     sortRoute: String,
-    productData: Array
+    productData: Array,
+    cartRoute: String
   },
   mounted: function mounted() {
     this.sortOptions = [{
@@ -27807,7 +27822,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       axios.post(this.submitRoute, this.product).then(function (response) {
         if (response) {
           _this2.add = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(true);
-          location.reload();
+          axios.get(_this2.cartRoute).then(function (response) {
+            _this2.countCart = response.data;
+            document.getElementById('count').innerHTML = _this2.countCart;
+          });
         }
       })["catch"](function (error) {
         return console.log(error);
@@ -27816,6 +27834,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     getInputValue: function getInputValue(field) {
       this.products = this.productData;
       var checkedList = [];
+      var checkedType = [];
       var node = document.querySelectorAll('input[type=checkbox]');
 
       var _iterator = _createForOfIteratorHelper(node),
@@ -27826,7 +27845,26 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           var checkbox = _step.value;
 
           if (checkbox.checked) {
-            checkedList.push(checkbox.value);
+            var checkedID = checkbox.id.split('-');
+
+            if (checkedType.length > 0) {
+              if (checkedType.includes(checkedID[1])) {
+                var index = checkedType.indexOf(checkedID[1]);
+
+                if (index > -1) {
+                  checkedType.splice(index, 1);
+                  checkedType.push(checkedID[1]);
+                }
+              } else {
+                checkedType.push(checkedID[1]);
+              }
+            } else {
+              checkedType.push(checkedID[1]);
+            }
+
+            var itemObj = {};
+            itemObj[checkedID[1]] = checkbox.value;
+            checkedList.push(itemObj);
           }
         }
       } catch (err) {
@@ -27838,60 +27876,126 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (checkedList.length > 0) {
         var valueList = [];
         this.productData.forEach(function (value) {
-          if (field == 'color') {
-            var temp = JSON.parse(value.colors);
+          if (checkedType.length == 1) {
+            if (field == 'color') {
+              var temp = JSON.parse(value.colors);
 
-            var _iterator2 = _createForOfIteratorHelper(checkedList),
-                _step2;
+              var _iterator2 = _createForOfIteratorHelper(checkedList),
+                  _step2;
 
-            try {
-              for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-                var item = _step2.value;
+              try {
+                for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+                  var item = _step2.value;
 
-                if (item == temp[0].name) {
-                  valueList.push(value);
-                }
-              }
-            } catch (err) {
-              _iterator2.e(err);
-            } finally {
-              _iterator2.f();
-            }
-          } else if (field == 'size') {
-            var _temp = JSON.parse(value.sizes);
-
-            var _iterator3 = _createForOfIteratorHelper(_temp),
-                _step3;
-
-            try {
-              for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-                var size = _step3.value;
-
-                var _iterator4 = _createForOfIteratorHelper(checkedList),
-                    _step4;
-
-                try {
-                  for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-                    var _item = _step4.value;
-
-                    if (_item == size.name && size.inStock) {
-                      valueList.push(value);
-                    }
+                  if (item.color == temp[0].name) {
+                    valueList.push(value);
                   }
-                } catch (err) {
-                  _iterator4.e(err);
-                } finally {
-                  _iterator4.f();
+                }
+              } catch (err) {
+                _iterator2.e(err);
+              } finally {
+                _iterator2.f();
+              }
+            } else if (field == 'size') {
+              var _temp = JSON.parse(value.sizes);
+
+              var _iterator3 = _createForOfIteratorHelper(_temp),
+                  _step3;
+
+              try {
+                for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+                  var size = _step3.value;
+
+                  var _iterator4 = _createForOfIteratorHelper(checkedList),
+                      _step4;
+
+                  try {
+                    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+                      var _item = _step4.value;
+
+                      if (_item.size == size.name && size.inStock) {
+                        valueList.push(value);
+                      }
+                    }
+                  } catch (err) {
+                    _iterator4.e(err);
+                  } finally {
+                    _iterator4.f();
+                  }
+                }
+              } catch (err) {
+                _iterator3.e(err);
+              } finally {
+                _iterator3.f();
+              }
+            }
+          } else {
+            var tempColor = JSON.parse(value.colors);
+            var tempSize = JSON.parse(value.sizes);
+            var sizeList = [];
+
+            var _iterator5 = _createForOfIteratorHelper(tempSize),
+                _step5;
+
+            try {
+              for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+                var _size = _step5.value;
+
+                if (_size.inStock) {
+                  sizeList.push(_size.name);
                 }
               }
             } catch (err) {
-              _iterator3.e(err);
+              _iterator5.e(err);
             } finally {
-              _iterator3.f();
+              _iterator5.f();
+            }
+
+            var _iterator6 = _createForOfIteratorHelper(checkedList),
+                _step6;
+
+            try {
+              for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+                var _item2 = _step6.value;
+
+                if (sizeList.includes(_item2.size)) {
+                  valueList.push(value);
+                  var index = valueList.indexOf(value);
+
+                  if (index > -1) {
+                    valueList.splice(index, 1);
+                    valueList.push(value);
+                  }
+                }
+
+                if (_item2.color == tempColor[0].name) {
+                  valueList.push(value);
+
+                  var _index = valueList.indexOf(value);
+
+                  console.log(_index);
+
+                  if (_index > -1) {
+                    valueList.splice(_index, 1);
+                    valueList.push(value);
+                  }
+                }
+              }
+            } catch (err) {
+              _iterator6.e(err);
+            } finally {
+              _iterator6.f();
             }
           }
         });
-        this.products = valueList;
+        var uniqueArray = valueList.filter(function (value, index) {
+          var _value = JSON.stringify(value);
+
+          return index === valueList.findIndex(function (obj) {
+            return JSON.stringify(obj) === _value;
+          });
+        });
+        this.products = uniqueArray;
       } else {
         this.products = this.productData;
       }

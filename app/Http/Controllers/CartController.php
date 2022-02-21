@@ -88,4 +88,15 @@ class CartController extends Controller
             return $e->getMessage();
         }
     }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function list()
+    {
+        $cart = count(Cart::where('user_id',Auth::user()->id)->groupBy(['id','color','size'])->get());
+        return response()->json($cart);
+    }
 }

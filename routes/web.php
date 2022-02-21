@@ -27,6 +27,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('cart','CartController@index')->name('cart');
     Route::post('add-cart','CartController@store')->name('add.cart');
     Route::post('remove-cart','CartController@destroy')->name('remove.cart');
+    Route::get('list-cart','CartController@list')->name('list.cart');
 
     //Order Module
     Route::get('order','OrderController@index')->name('order');

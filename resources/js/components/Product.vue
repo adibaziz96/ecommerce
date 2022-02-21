@@ -334,6 +334,7 @@
             submitRoute: String,
             sortRoute: String,
             productData: Array,
+            cartRoute: String
         },
         mounted() {
             this.sortOptions = [
@@ -395,43 +396,101 @@
                 axios.post(this.submitRoute,this.product).then(response => {
                     if(response){
                         this.add = ref(true)
-                        location.reload()
+                        axios.get(this.cartRoute).then((response) => {
+                            this.countCart = response.data
+                            document.getElementById('count').innerHTML = this.countCart;
+                        })
                     }
                 }).catch(error => console.log(error));
             },
             getInputValue(field) {
                 this.products = this.productData
                 const checkedList = [];
+                const checkedType = [];
                 const node = document.querySelectorAll('input[type=checkbox]');
                 
                 for (const checkbox of node) {
                     if (checkbox.checked){
-                        checkedList.push(checkbox.value);
+                        const checkedID = checkbox.id.split('-')
+                        if(checkedType.length > 0){
+                            if(checkedType.includes(checkedID[1])){
+                                const index = checkedType.indexOf(checkedID[1])
+                                if (index > -1) {
+                                    checkedType.splice(index, 1)
+                                    checkedType.push(checkedID[1])
+                                }
+                            }else{
+                                checkedType.push(checkedID[1])
+                            }
+                        }else{
+                            checkedType.push(checkedID[1])
+                        }
+                        const itemObj = {};
+                        itemObj[checkedID[1]] = checkbox.value;
+                        checkedList.push(itemObj)
                     }
                 }
 
                 if(checkedList.length > 0){
                     const valueList = [];
                     this.productData.forEach((value)=>{
-                        if(field == 'color'){
-                            const temp = JSON.parse(value.colors)
-                            for(const item of checkedList){
-                                if(item == temp[0].name){
-                                    valueList.push(value)
+                        if(checkedType.length == 1){
+                            if(field == 'color'){
+                                const temp = JSON.parse(value.colors)
+                                for(const item of checkedList){
+                                    if(item.color == temp[0].name){
+                                        valueList.push(value)
+                                    }
+                                }
+                            }else if(field == 'size'){
+                                const temp = JSON.parse(value.sizes)
+                                for(const size of temp){
+                                    for(const item of checkedList){
+                                        if(item.size == size.name && size.inStock){
+                                            valueList.push(value)
+                                        }
+                                    }
                                 }
                             }
-                        }else if(field == 'size'){
-                            const temp = JSON.parse(value.sizes)
-                            for(const size of temp){
-                                for(const item of checkedList){
-                                    if(item == size.name && size.inStock){
+                        }else{
+                            const tempColor = JSON.parse(value.colors)
+                            const tempSize = JSON.parse(value.sizes)
+
+                            const sizeList = [];
+                            for(const size of tempSize){
+                                if(size.inStock){
+                                    sizeList.push(size.name)
+                                }
+                            }
+
+                            for(const item of checkedList){
+                                if(sizeList.includes(item.size)){
+                                    valueList.push(value)
+                                    const index = valueList.indexOf(value)
+                                    if (index > -1) {
+                                        valueList.splice(index, 1)
+                                        valueList.push(value)
+                                    }
+                                }
+                                if(item.color == tempColor[0].name){
+                                    valueList.push(value)
+                                    const index = valueList.indexOf(value)
+                                    console.log(index)
+                                    if (index > -1) {
+                                        valueList.splice(index, 1)
                                         valueList.push(value)
                                     }
                                 }
                             }
                         }
                     })
-                    this.products = valueList;
+                    const uniqueArray = valueList.filter((value, index) => {
+                        const _value = JSON.stringify(value);
+                        return index === valueList.findIndex(obj => {
+                            return JSON.stringify(obj) === _value;
+                        });
+                    });
+                    this.products = uniqueArray;
                 }else{
                     this.products = this.productData
                 }
