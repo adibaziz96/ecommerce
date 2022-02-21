@@ -29,7 +29,7 @@ class CartController extends Controller
         $cart = DB::table('cart')
                     ->select('cart.*',DB::raw('count(*) as total'))
                     ->where('user_id',Auth::user()->id)
-                    ->groupBy(['id','color','size'])
+                    ->groupBy(['color','size'])
                     ->get();
         return view('cart',compact('cart'));
     }
@@ -96,7 +96,7 @@ class CartController extends Controller
      */
     public function list()
     {
-        $cart = count(Cart::where('user_id',Auth::user()->id)->groupBy(['id','color','size'])->get());
+        $cart = count(Cart::where('user_id',Auth::user()->id)->groupBy(['color','size'])->get());
         return response()->json($cart);
     }
 }
