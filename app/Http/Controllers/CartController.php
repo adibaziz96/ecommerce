@@ -26,10 +26,9 @@ class CartController extends Controller
      */
     public function index()
     {
-        $cart = DB::table('cart')
-                    ->select('cart.*',DB::raw('count(*) as total'))
+        $cart = Cart::select('cart.user_id','cart.name','cart.imageSrc','cart.imageAlt','cart.price','cart.color','cart.size',DB::raw('count(*) as total'))
                     ->where('user_id',Auth::user()->id)
-                    ->groupBy(['color','size'])
+                    ->groupBy(['user_id','name','imageSrc','imageAlt','price','color','size'])
                     ->get();
         return view('cart',compact('cart'));
     }
@@ -77,11 +76,10 @@ class CartController extends Controller
                 ->where('user_id',Auth::user()->id)
                 ->delete();
 
-            $cart = DB::table('cart')
-                    ->select('cart.*',DB::raw('count(*) as total'))
-                    ->where('user_id',Auth::user()->id)
-                    ->groupBy(['color','size'])
-                    ->get();
+            $cart = Cart::select('cart.user_id','cart.name','cart.imageSrc','cart.imageAlt','cart.price','cart.color','cart.size',DB::raw('count(*) as total'))
+                        ->where('user_id',Auth::user()->id)
+                        ->groupBy(['user_id','name','imageSrc','imageAlt','price','color','size'])
+                        ->get();
 
             return $cart;
         }catch(\Exception $e){
@@ -96,7 +94,10 @@ class CartController extends Controller
      */
     public function list()
     {
-        $cart = count(Cart::where('user_id',Auth::user()->id)->groupBy(['color','size'])->get());
+        $cart = count(Cart::select('cart.user_id','cart.name','cart.imageSrc','cart.imageAlt','cart.price','cart.color','cart.size',DB::raw('count(*) as total'))
+                            ->where('user_id',Auth::user()->id)
+                            ->groupBy(['user_id','name','imageSrc','imageAlt','price','color','size'])
+                            ->get());
         return response()->json($cart);
     }
 }

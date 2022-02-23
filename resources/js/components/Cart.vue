@@ -5,7 +5,7 @@
                 <div class="mt-8">
                     <div class="flow-root">
                         <ul role="list" class="-my-6 divide-y divide-gray-200">
-                            <li v-for="product in products" :key="product.id" class="py-6 flex">
+                            <li v-for="product in products" :key="product.user_id" class="py-6 flex">
                             <div class="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
                                 <img :src="product.imageSrc" :alt="product.imageAlt" class="w-full h-full object-center object-cover" />
                             </div>
